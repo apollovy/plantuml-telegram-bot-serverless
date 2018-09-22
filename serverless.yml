@@ -1,0 +1,23 @@
+service:
+  name: plantuml-telegram-bot-serverless
+
+# Add the serverless-webpack plugin
+plugins:
+  - serverless-webpack
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  environment:
+    TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN}
+    PLANTUML_ENCODER_URL: ${env:PLANTUML_ENCODER_URL}
+    PLANTUML_RENDERER_URL: ${env:PLANTUML_RENDERER_URL}
+
+functions:
+  handleTelegramCallback:
+    memorySize: 128 # optional, in MB, default is 1024
+    handler: handler.messageHandler
+    events:
+      - http:
+          method: post
+          path: callback
