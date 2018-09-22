@@ -12,10 +12,12 @@ const rendererURL: string = process.env['PLANTUML_RENDERER_URL'];
 export const messageHandler: Handler = (
     event: APIGatewayEvent, context: Context, cb: Callback
 ) => {
+    console.log('Starting processing');
     const update = JSON.parse(event.body);
     const message = update.message ? update.message : update.edited_message;
     const text: string = message.text;
     const chatId: string = message.chat.id;
+    console.log('Sending request to encoder');
     request(
         {
             url: encoderURL,
@@ -24,11 +26,13 @@ export const messageHandler: Handler = (
         }, (error, response, body) => {
             if (!error && response.statusCode === 200) {
                 const imageURL: string = rendererURL + '/' + body;
+                console.log('Sending request to Telegram');
                 telegramBot.sendPhoto(chatId, imageURL);
                 const response = {
                     statusCode: 200,
                 };
-                cb(null, response)
+                cb(null, response);
+                console.log('Finished processing');
             }
         }
     );
